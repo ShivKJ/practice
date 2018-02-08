@@ -14,12 +14,12 @@ def max_revenue(p: ndarray, n: int):
     '''
     Optimal structure:
                     r[j] = max(p[i] + r[n-i]),   r[0] = 0
-                         1 <= i <= n
+                         1 <= i <= j
 
                                 OR
 
                     r[j] = max(p[i], max(r[i] + r[n-i]),    r[0] = 0
-                        1 <= i <= n
+                        1 <= i <= j
 
           eg.       r[3] = max(p[1] + r[2], p[2] + r[1], p[3] + r[0])
                          = max(p[1] + r[2], p[2] + r[1], p[3])
