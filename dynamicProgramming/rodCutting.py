@@ -13,12 +13,12 @@ Implementation Notes: Given a rod of length "n", cut it in pieces such that
 def max_revenue(p: ndarray, n: int):
     '''
     Optimal structure:
-                    r[j] = max(p[i] + r[n-i]),   r[0] = 0
+                    r[j] = max(p[i] + r[j-i]),   r[0] = 0
                          1 <= i <= j
 
                                 OR
 
-                    r[j] = max(p[i], max(r[i] + r[n-i]),    r[0] = 0
+                    r[j] = max(p[i], max(r[i] + r[j-i]),    r[0] = 0
                         1 <= i <= j
 
           eg.       r[3] = max(p[1] + r[2], p[2] + r[1], p[3] + r[0])
@@ -29,12 +29,12 @@ def max_revenue(p: ndarray, n: int):
     :return:
     '''
 
-    r = np.zeros(n + 1, dtype=p.dtype)
+    optimal = np.zeros(n + 1, dtype=p.dtype)
 
     for i in range(1, n + 1):
-        r[i] = max(r[:i] + p[:i][::-1])
+        optimal[i] = max(optimal[:i] + p[:i][::-1])
 
-    return r[n]
+    return optimal[n]
 
 
 def extended_bottom_up(price: ndarray, length: int):
@@ -60,4 +60,3 @@ def print_rod_cut(s, n):
         n -= s[n]
 
     print()
-
