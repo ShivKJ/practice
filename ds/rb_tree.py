@@ -19,7 +19,7 @@ class Node:
 NIL = Node(color=BLACK)
 
 
-def get_node(key) -> Node:
+def create_node(key) -> Node:
     '''
     Creates a new black node containing the key
     :param key:
@@ -31,16 +31,40 @@ def get_node(key) -> Node:
 
 
 class RBTree:
+    '''
+    Red-Black Tree property:
+            1) Every node is either red or black (always satisfied)
+            2) The root is black
+            3) Every leaf (NIL) is black. (always satisfied)
+            4) If node is red then both it's children are black.
+            5) For each node, all simple paths from the node to descendent
+            leaves contain same number of black nodes.
+
+    '''
+
     def __init__(self):
         self._root = NIL
         self._size = 0
 
     def insert(self, key):
+        '''
+        Inserting a node into tree. New node is created Black.
+        1) Node is found where the new node(z) has to be inserted (y)
+        2) This node (y) become parent of new node(z).
+        3) If y is null which is case when root is null, then setting
+           to root to z, otherwise it would either become left or
+           right child.
+        4) After inserting the node we may have violated Red-Black tree
+           property, which is restored in insertion_fixup
+
+        :param key:
+        :return:
+        '''
         self._size += 1
 
         x = self._root
         y = NIL
-        z = get_node(key)
+        z = create_node(key)
 
         while x is not NIL:
             y = x
@@ -62,26 +86,25 @@ class RBTree:
         This maintains the red-black tree property after insertion of new node z
         in tree.
 
-        Red-Black Tree property:
-            1) Every node is either red or black (always satisfied)
-            2) The root is black
-            3) Every leaf (NIL) is black. (always satisfied)
-            4) If node is red then both it's children are black.
-            5) For each node, all simple paths from the node to descendent
-            leaves contain same number of black nodes.
-
-        If z is the root then while loop is not executed as it's parent is
-        NIL, color of which is black. Since root has to be black, it is set
-        as well. Loop will also not be executed if z's parent is black.
+        If z is the root then 'while' loop is not executed as it's parent(BLACK)
+        is NIL. Since root has to be black, it is set as well. Loop will also
+        not be executed if z's parent is black.
 
         let uncle of z is son of grandparent of z who is not parent of z.
+        Eg.
+                        grand_parent
+                        /     \
+                     parent   uncle
+                     /\        /\
+                    z  T1     T2 T3
+
         Now depending upon whether uncle is left or right child, there will
         be six case. Due to symmetrical treatment we consider only three
         cases in which uncle is a right child.
 
         Case 1: uncle's color is Red.
             In this case, we color uncle and z's parent BLACK and
-            z's grandparent RED and set z = z's grandparent. Only property
+            z's grandparent RED and set z = z's grandparent. Property
             which can be violated is 2 which will be set in last line. Notice
             that if now z points to root then loop does not execute as root's
             parent is NIL color of which is black.
@@ -97,27 +120,32 @@ class RBTree:
         """
         while z.p.color is RED:
             if z.p is z.p.p.l:
-                y = z.p.p.r
+                # parent of z is in left.
 
-                if y.color is RED:
+                uncle = z.p.p.r
+
+                if uncle.color is RED:  # case1
                     z.p.color = BLACK
-                    y.color = BLACK
+                    uncle.color = BLACK
+
                     z.p.p.color = RED
                     z = z.p.p
                 else:
-                    if z is z.p.r:
+                    if z is z.p.r:  # case2
                         z = z.p
                         self.left_rotation(z)
 
+                    # now starts case3
                     z.p.color = BLACK
                     z.p.p.color = RED
+
                     self.right_rotation(z.p.p)
             else:
-                y = z.p.p.l
+                uncle = z.p.p.l
 
-                if y.color is RED:
+                if uncle.color is RED:
                     z.p.color = BLACK
-                    y.color = BLACK
+                    uncle.color = BLACK
                     z.p.p.color = RED
                     z = z.p.p
                 else:
@@ -319,6 +347,7 @@ class RBTree:
                     self.left_rotation(x.p)
                     x = self._root
             else:
+                # TODO
                 pass
 
         x.color = BLACK
