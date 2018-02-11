@@ -21,7 +21,7 @@ NIL = Node(color=BLACK)
 
 def create_node(key) -> Node:
     '''
-    Creates a new black node containing the key
+    Creates a new red node containing the key
     :param key:
     :return: formed Node
     '''
@@ -33,11 +33,11 @@ def create_node(key) -> Node:
 class RBTree:
     '''
     Red-Black Tree property:
-            1) Every node is either red or black (always satisfied)
-            2) The root is black
-            3) Every leaf (NIL) is black. (always satisfied)
-            4) If node is red then both it's children are black.
-            5) For each node, all simple paths from the node to descendent
+            P1) Every node is either red or black (always satisfied)
+            P2) The root is black
+            P3) Every leaf (NIL) is black. (always satisfied)
+            P4) If node is red then both it's children are black.
+            P5) For each node, all simple paths from the node to descendant
             leaves contain same number of black nodes.
 
     '''
@@ -86,12 +86,15 @@ class RBTree:
         This maintains the red-black tree property after insertion of new node z
         in tree.
 
-        If z is the root then 'while' loop is not executed as it's parent(BLACK)
-        is NIL. Since root has to be black, it is set as well. Loop will also
-        not be executed if z's parent is black.
+        Properties that can be violated:
+        V1) Root becomes red. ('z' is itself root)
+        V2) Red parent's child is also red.
 
-        let uncle of z is son of grandparent of z who is not parent of z.
-        Eg.
+        If 'z' is the root: we only have to color it black.
+
+        Otherwise the only property which is violated is 'V2'. To fix this we
+        consider 'z' uncle.
+
                         grand_parent
                         /     \
                      parent   uncle
@@ -99,35 +102,41 @@ class RBTree:
                     z  T1     T2 T3
 
         Now depending upon whether uncle is left or right child, there will
-        be six case. Due to symmetrical treatment we consider only three
-        cases in which uncle is a right child.
+        be six case. Due to symmetry, we consider only three cases in which
+        uncle is a right child.
 
-        Case 1: uncle's color is Red.
+        Case 1: uncle's color is Red:
             In this case, we color uncle and z's parent BLACK and
-            z's grandparent RED and set z = z's grandparent. Property
-            which can be violated is 2 which will be set in last line. Notice
-            that if now z points to root then loop does not execute as root's
-            parent is NIL color of which is black.
-        Case 2: uncle's color is Black and z is right child.
-            We set z = z.parent and perform left rotation wrt to z. This is
-            changed to Case 3
-        Case 3: uncle's color is Black and z is left child.
-            We color z'parent Black and z'grandparent Red and performs right
-            rotation wrt to z'parent. Note that while loop will now terminate.
+            z's grandparent RED and set z = z's grandparent. Thus
+            correcting V2 locally. Recoloring does the work, no
+            rotation needed. In this manner, we may end up  coloring
+            root RED, which is handled in  the red. 'while' loop takes
+            care of it.
+
+        Case 2: uncle's color is Black and z is right child:
+            We left rotate wrt to z's parent and z, in this process z's parent
+            become z's left child. Now setting z's pointer to z's earlier
+            parent so that it reduces to third case. Notice that in this
+            process we are still violating V2 as we have not changed the colors
+            of either z or its parent. The state resembles to case 3.
+
+        Case 3: uncle's color is Black and z is left child:
+            This follows V2. We color z'parent Black and z'grandparent Red and
+            right rotate wrt z's parent, in this way correcting V2.
+            Notice that 'while' loop will not terminate.
 
         :param z: node which was inserted
         :return:
         """
+
         while z.p.color is RED:
             if z.p is z.p.p.l:
                 # parent of z is in left.
-
                 uncle = z.p.p.r
 
                 if uncle.color is RED:  # case1
                     z.p.color = BLACK
                     uncle.color = BLACK
-
                     z.p.p.color = RED
                     z = z.p.p
                 else:
@@ -136,9 +145,8 @@ class RBTree:
                         self.left_rotation(z)
 
                     # now starts case3
-                    z.p.color = BLACK
                     z.p.p.color = RED
-
+                    z.p.color = BLACK  # as z's parent is Black, loop will terminates
                     self.right_rotation(z.p.p)
             else:
                 uncle = z.p.p.l
@@ -268,8 +276,8 @@ class RBTree:
 
     @staticmethod
     def tree_min(n: Node):
-        while n.left is not NIL:
-            n = n.left
+        while n.l is not NIL:
+            n = n.l
 
         return n
 
@@ -281,49 +289,101 @@ class RBTree:
         :return:
         """
 
-        if u.p is NIL:
+        if u is self._root:
             self._root = v
         elif u is u.p.l:
             u.p.l = v
         else:
             u.p.r = v
 
-        if v is not NIL:
-            v.p = u.p
+        v.p = u.p  # no need to check if v is NIL
+
+    def delete_key(self, key):
+        x = self.find(key)
+
+        if x is not None:
+            self.delete(x)
+
+    def find(self, key):
+        x = self._root
+        print(x)
+        while x is not NIL:
+            if x.x == key:
+                return x
+            if x.x < key:
+                x = x.r
+            else:
+                x = x.l
+
+        return None
 
     def delete(self, z: Node):
+        '''
+        deleting a node from tree
 
+        First of all we need to find a substitute for z. For that,
+        we can either choose predecessor or successor of z, i.e. node
+        which are just smaller or just greater than z.
+
+        We call delete fix-up only when color of z(or to be 'z') is Black,
+        if it is red then all red black properties are satisfied. Removing
+        black node does not change black height, does not make two red
+        node adjacent and since y was not root, root remains black.
+
+        :param z:
+        :return:
+        '''
         y_col = z.color
 
         if z.l is NIL:
+            '''
+                            |
+                            z
+                             \
+                             x
+                            / \
+                           T1 T2
+                           
+                as left child of z is missing, we can transplant z with x, 
+                without violating search property.
+            '''
             x = z.r
             self.transplant(z, x)
         elif z.r is NIL:
+            '''
+                            |
+                            z
+                           / 
+                          x
+                         / \
+                       T1  T2
+
+                as right child of z is missing, we can transplant z with x, 
+                without violating search property.
+            '''
             x = z.l
             self.transplant(z, x)
         else:
-            y = RBTree.tree_min(z.r)
+            y = RBTree.tree_min(z.r)  # finding successor to replace z
             y_col = y.color
             x = y.r
 
-            if y.p is z:
-                x.p = z
-            else:
+            if y.p is not z:
                 self.transplant(y, x)
                 y.r = z.r
                 z.r.p = y
 
             self.transplant(z, y)
-
             y.l = z.l
             z.l.p = y
 
             y.color = z.color
 
+        self._size -= 1
         if y_col is BLACK:
-            self.deletion_fixup(x)
+            self.deletion_fix_up(x)
 
-    def deletion_fixup(self, x: Node):
+    def deletion_fix_up(self, x: Node):
         while x is not self._root and x.color is BLACK:
             if x is x.p.l:
                 w = x.p.r
@@ -347,7 +407,37 @@ class RBTree:
                     self.left_rotation(x.p)
                     x = self._root
             else:
-                # TODO
-                pass
+                w = x.p.l
+                if w.color is RED:
+                    w.color = BLACK
+                    x.p.color = RED
+                    self.right_rotation(x.p)
+                    w = x.p.l
+
+                if w.r.color is w.l.color is BLACK:
+                    w.color = RED
+                    x = x.p
+                else:
+                    if w.l.color is BLACK:
+                        w.r.color = BLACK
+                        w.color = RED
+                        self.left_rotation(w)
+                        x = x.p.l
+                    w.color = x.p.color
+                    x.p.color = w.l.color = BLACK
+                    self.right_rotation(x.p)
+                    x = self._root
 
         x.color = BLACK
+
+
+if __name__ == '__main__':
+    import random
+
+    data = [random.randint(1, 10000) for _ in range(1000)]
+    tree = RBTree()
+
+    for x in data:
+        tree.insert(x)
+    for x in data:
+        tree.delete_key(x)
