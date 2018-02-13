@@ -11,6 +11,42 @@ class Node:
         return 'x={}'.format(self.x)
 
 
+def find_min(n: Node):
+    while n.l is not None:
+        n = n.l
+
+    return n
+
+
+def find_max(n):
+    while n.r is not None:
+        n = n.r
+    return n
+
+
+def successor(n):
+    if n.r is not None:
+        return find_min(n.r)
+
+    y = n.p
+
+    while y is not None and n is y.r:
+        n, y = y, y.p
+
+    return y
+
+
+def predecessor(n):
+    if n.l is not None:
+        return find_max(n.l)
+    y = n.p
+
+    while y is not None and n is y.l:
+        n, y = y, y.p
+
+    return y
+
+
 class BTree:
 
     def __init__(self):
@@ -72,7 +108,8 @@ class BTree:
         elif z.r is None:
             self.transplant(z, z.l)
         else:
-            y = BTree.min(z.r)
+            y = find_min(z.r)
+
             if y.p is not z:
                 self.transplant(y, y.r)
                 y.r = z.r
@@ -87,29 +124,6 @@ class BTree:
     @staticmethod
     def createNode(key):
         return Node(key)
-
-    @staticmethod
-    def min(n):
-        while n.l is not None:
-            n = n.l
-        return n
-
-    @staticmethod
-    def max(n):
-        while n.r is not None:
-            n = n.r
-        return n
-
-    @staticmethod
-    def successor(n):
-        if n.r is not None:
-            return BTree.min(n.r)
-        y = n.p
-
-        while y is not None and n is y.r:
-            n, y = y, y.p
-
-        return y
 
     def __len__(self):
         return self.size
