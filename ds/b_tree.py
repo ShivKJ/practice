@@ -18,13 +18,13 @@ def find_min(n: Node):
     return n
 
 
-def find_max(n):
+def find_max(n: Node):
     while n.r is not None:
         n = n.r
     return n
 
 
-def successor(n):
+def successor(n: Node):
     if n.r is not None:
         return find_min(n.r)
 
@@ -36,7 +36,7 @@ def successor(n):
     return y
 
 
-def predecessor(n):
+def predecessor(n: Node):
     if n.l is not None:
         return find_max(n.l)
     y = n.p
@@ -82,7 +82,7 @@ class BTree:
             y.r = z
         self.size += 1
 
-    def transplant(self, u, v):
+    def transplant(self, u: Node, v: Node):
         if u.p is None:
             self.root = v
         elif u.p.l is u:
@@ -102,7 +102,7 @@ class BTree:
     def contains(self, key):
         return self.search(key) is not None
 
-    def delete(self, z):
+    def delete(self, z: Node):
         if z.l is None:
             self.transplant(z, z.r)
         elif z.r is None:
