@@ -8,22 +8,34 @@ class Node:
         self.p = None
         self.h = 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'x={}'.format(self.x)
 
+    def update_height(self):
+        self.h = 1 + max(self._child_heights())
 
-def get_height(n: Node):
-    l_h = 0 if n.l is None else n.l.h
-    r_h = 0 if n.r is None else n.r.h
+    def _child_heights(self) -> tuple:
+        l_h = 0 if self.l is None else self.l.h
+        r_h = 0 if self.r is None else self.r.h
 
-    return 1 + max(l_h, r_h)
+        return l_h, r_h
+
+    @property
+    def height_diff(self) -> int:
+        l, r = self._child_heights()
+
+        return l - r
+
+    @property
+    def balanced(self) -> bool:
+        return abs(self.height_diff) <= 1
 
 
-def get_diff(n: Node):
-    l_h = 0 if n.l is None else n.l.h
-    r_h = 0 if n.r is None else n.r.h
+def find_min(n: Node):
+    while n.l is not None:
+        n = n.l
 
-    return l_h - r_h
+    return n
 
 
 class AVL:
@@ -31,52 +43,131 @@ class AVL:
         self.root = None
         self.size = 0
 
-    def insert(self, n: Node):
-        c, p = self.root, None
+    def find(self, key) -> Node:
+        x = self.root
 
-        while c is not None:
-            p, c = c, c.l if n.x <= c.x else c.r
+        while x is not None:
+            if x.x == key:
+                return x
+            x = x.l if key < x.x else x.r
 
-        if p is None:
+    def contains(self, key):
+        return self.find(key) is not None
+
+    def insert(self, key):
+        self._insert(Node(key))
+
+    def _insert(self, n: Node):
+        child, parent = self.root, None
+
+        while child is not None:
+            parent, child = child, child.l if n.x <= child.x else child.r
+
+        if parent is None:
             self.root = n
-        elif n.x <= p.x:
-            p.l = n
+        elif n.x <= parent.x:
+            parent.l = n
         else:
-            p.r = n
+            parent.r = n
 
-        n.p = p
+        n.p = parent
 
         self.size += 1
         self.balance(n)
 
     def balance(self, x: Node):
         while x.p is not None and x.p.p is not None:
-            x.h = get_height(x)
-            p, gp = x.p, x.p.p
+            x.update_height()
+            y, z = x.p, x.p.p
 
-            p.h = max(1 + x.h, get_height(p))
-            gp.h = max(1 + p.h, get_height(gp))
+            y.update_height()
+            z.update_height()
 
-            if abs(get_diff(gp)) > 1:
-                if p is gp.l:
-                    if x is p.r:
-                        self.left_rotation(p)
-                        p.h -= 1
-                        x.h += 1
+            if not z.balanced:
+                if y is z.l:
+                    if x is y.r:
+                        self.left_rotation(y)
+                        y.update_height()
+                        x.update_height()
 
-                    self.right_rotation(gp)
+                    self.right_rotation(z)
                 else:
-                    if x is p.l:
-                        self.right_rotation(p)
-                        p.h -= 1
-                        x.h += 1
+                    if x is y.l:
+                        self.right_rotation(y)
+                        y.update_height()
+                        x.update_height()
 
-                    self.left_rotation(gp)
-                gp.h -= 2
+                    self.left_rotation(z)
 
-                break
+                z.update_height()
+                break  # balanced globally
 
             x = x.p
+
+    def delete(self, key):
+        z = self.find(key)
+
+        if z is not None:
+            self._delete(z)
+
+    def _delete(self, z: Node):
+        if z.l is None:
+            balancing_node = z.p
+            self.transplant(z, z.r)
+        elif z.r is None:
+            balancing_node = z.p
+            self.transplant(z, z.l)
+        else:
+            y = find_min(z.r)
+
+            if y.p is not z:
+                balancing_node = y.p
+                self.transplant(y, y.r)
+                y.r = z.r
+                z.r.p = y
+
+            else:
+                balancing_node = y  # as y will be taking z's place
+
+            self.transplant(z, y)
+            y.l = z.l
+            z.l.p = y
+
+        self.size -= 1
+
+        if balancing_node is not None:  # will be None only when root is removed
+            self.delete_bal(balancing_node)
+
+    def delete_bal(self, z: Node):
+        while z is not None:
+            z.update_height()
+            z_h_diff = z.height_diff
+
+            if abs(z_h_diff) > 1:
+                if z_h_diff > 0:
+                    y = z.l
+                    y_h_diff = y.height_diff
+
+                    if y_h_diff < 0:
+                        self.left_rotation(y)
+                        y.update_height()
+                        y.p.update_height()
+
+                    self.right_rotation(z)
+                else:
+                    y = z.r
+                    y_h_diff = y.height_diff
+
+                    if y_h_diff > 0:
+                        self.right_rotation(y)
+                        y.update_height()
+                        y.p.update_height()
+
+                    self.left_rotation(z)
+
+                z.update_height()
+
+            z = z.p
 
     def right_rotation(self, y: Node):
         x = y.l
@@ -133,18 +224,13 @@ class AVL:
         y.l = x
         x.p = y
 
+    def transplant(self, u: Node, v: Node):
+        if u.p is None:
+            self.root = v
+        elif u.p.l is u:
+            u.p.l = v
+        else:
+            u.p.r = v
 
-if __name__ == '__main__':
-    import random
-
-    random.seed(0)
-
-    data = [Node(random.randint(1, 10)) for _ in range(10)]
-    avl = AVL()
-
-    for x in data:
-        avl.insert(x)
-
-    print(avl.root)
-    print(avl.size)
-    print(avl.root.h)
+        if v is not None:
+            v.p = u.p
