@@ -93,6 +93,18 @@ class AVL:
         self.size += 1
         self._insert_balance(n)
 
+    def _insert_balance(self, x: Node):
+        while x.p is not None and x.p.p is not None:
+            x.update_height()
+            x.p.update_height()
+            x.p.p.update_height()
+
+            if not x.p.p.balanced:
+                self._balance(x)
+                break  # balanced globally
+
+            x = x.p
+
     def _balance(self, x: Node):
         y, z = x.p, x.p.p
 
@@ -112,18 +124,6 @@ class AVL:
             self.left_rotation(z)
 
         z.update_height()
-
-    def _insert_balance(self, x: Node):
-        while x.p is not None and x.p.p is not None:
-            x.update_height()
-            x.p.update_height()
-            x.p.p.update_height()
-
-            if not x.p.p.balanced:
-                self._balance(x)
-                break  # balanced globally
-
-            x = x.p
 
     def delete(self, key):
         z = self.find(key)
