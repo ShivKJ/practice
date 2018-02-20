@@ -22,26 +22,57 @@ class Node:
         return self.x > other.x
 
 
-def find_min(n: Node):
-    while n.l is not None:
+def find_min(n: Node, NIL=None):
+    while n.l is not NIL:
         n = n.l
 
     return n
 
 
-def pre_order(n: Node):
-    if n.l is not None:
+def find_max(n: Node, NIL=None):
+    while n.r is not NIL:
+        n = n.r
+
+    return n
+
+
+def successor(n: Node, NIL=None):
+    if n.r is not NIL:
+        return find_min(n.r, NIL)
+
+    y = n.p
+
+    while y is not NIL and n is y.r:
+        n, y = y, y.p
+
+    return y
+
+
+def predecessor(n: Node, NIL=None):
+    if n.l is not NIL:
+        return find_max(n.l, NIL)
+
+    y = n.p
+
+    while y is not NIL and n is y.l:
+        n, y = y, y.p
+
+    return y
+
+
+def pre_order(n: Node, NIL=None):
+    if n.l is not NIL:
         yield from pre_order(n.l)
 
     yield n.x
 
-    if n.r is not None:
+    if n.r is not NIL:
         yield from pre_order(n.r)
 
 
 class Tree:
-    def __init__(self):
-        self.root = None
+    def __init__(self, root=None):
+        self.root = root
         self.size = 0
 
     def node_creator(self, key):
@@ -55,27 +86,30 @@ class Tree:
     def delete(self, key):
         pass
 
-    def find(self, key):
+    def find(self, key, NIL=None):
         x = self.root
 
-        while x is not None:
+        while x is not NIL:
             if x.x == key:
                 return x
 
-            x = x.l if key <= x.x else x.r
+            x = x.l if key < x.x else x.r
 
-    def _insertion(self, key):
-        x, y = self.root, None
+        return NIL
 
-        while x is not None:
+    def _insertion(self, key, NIL=None):
+        x, y = self.root, NIL
+
+        while x is not NIL:
             if key == x.x:
                 return x
 
             y, x = x, x.l if key < x.x else x.r
 
         n = self.node_creator(key)
+        n.l = n.r = n.p = NIL
 
-        if y is None:
+        if y is NIL:
             self.root = n
         elif key < y.x:
             y.l = n
@@ -87,11 +121,11 @@ class Tree:
 
         return n
 
-    def _deletion(self, z: Node):
+    def _deletion(self, z: Node, NIL=None):
 
-        if z.l is None:
+        if z.l is NIL:
             self.transplant(z, z.r)
-        elif z.r is None:
+        elif z.r is NIL:
             self.transplant(z, z.l)
         else:
             y = find_min(z.r)
@@ -107,13 +141,12 @@ class Tree:
 
         self.size -= 1
 
-    def rr(self, y: Node):
+    def rr(self, y: Node, NIL=None):
         '''
         Right rotation with respect to y
         :param y:
         '''
 
-        x = y.l
         '''
                     |                               |
                     y                               x
@@ -122,14 +155,15 @@ class Tree:
                  / \                                 / \
                 A   B                               B   G
         '''
+        x = y.l
         y.l = x.r
 
-        if x.r is not None:
+        if x.r is not NIL:
             x.r.p = y
 
         x.p = y.p
 
-        if y.p is None:
+        if y.p is NIL:
             self.root = x
         elif y is y.p.l:
             y.p.l = x
@@ -139,13 +173,11 @@ class Tree:
         x.r = y
         y.p = x
 
-    def lr(self, x: Node):
+    def lr(self, x: Node, NIL=None):
         '''
         left rotation with respect to x
         :param x:
         '''
-        y = x.r
-        x.r = y.l
         '''
                     |                               |
                     x                               y
@@ -154,13 +186,15 @@ class Tree:
                      / \                         / \
                     B   G                       A   B
         '''
+        y = x.r
+        x.r = y.l
 
-        if y.l is not None:
+        if y.l is not NIL:
             y.l.p = x
 
         y.p = x.p
 
-        if x.p is None:
+        if x.p is NIL:
             self.root = y
         elif x is x.p.l:
             x.p.l = y
@@ -170,19 +204,19 @@ class Tree:
         y.l = x
         x.p = y
 
-    def transplant(self, u: Node, v: Node):
-        if u.p is None:
+    def transplant(self, u: Node, v: Node, NIL=None):
+        if u.p is NIL:
             self.root = v
         elif u.p.l is u:
             u.p.l = v
         else:
             u.p.r = v
 
-        if v is not None:
+        if v is not NIL:
             v.p = u.p
 
     def __bool__(self):
-        return self.root is not None
+        return bool(self.size)
 
     def __len__(self):
         return self.size
@@ -191,6 +225,7 @@ class Tree:
         return pre_order(self.root) if self else iter(())
 
     def __contains__(self, item):
+        # TODO: check if None can be replaced with NIL, passed as parameter
         return self.find(item) is not None
 
     def __delitem__(self, key):

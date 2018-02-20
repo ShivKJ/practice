@@ -111,3 +111,8 @@ class AVL(Tree):
                 z.update_height()
 
             z = z.p
+
+
+if __name__ == '__main__':
+    tree = AVL()
+    [tree.insert(x) for x in range(1000)]

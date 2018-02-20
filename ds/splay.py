@@ -71,3 +71,16 @@ class Splay(Tree):
 
             if p is not None:
                 self.splay(p)
+
+    def find(self, key):
+        x, y = self.root, None
+
+        while x is not None:
+            if x.x == key:
+                self.splay(x)
+                return x
+
+            y, x = x, x.l if key < x.x else x.r
+
+        if y is not None:  # key not found, splaying parent
+            self.splay(y)

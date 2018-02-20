@@ -1,32 +1,36 @@
+from ds.utils import Node, find_min
+
 RED = True
 BLACK = False
 
 
-class Node:
-    __slots__ = 'p', 'l', 'r', 'color', 'x'
+class RBNode(Node):
+    __slots__ = 'color'
 
     def __init__(self, x=None, color=RED):
-        self.x = x
-        self.p = None
-        self.l = None
-        self.r = None
+        super().__init__(x)
         self.color = color
 
+
+class Leaf(RBNode):
+    def __init__(self):
+        super().__init__(color=BLACK)
+
     def __str__(self):
-        return str(self.x)
+        return 'NIL'
 
 
-NIL = Node(color=BLACK)
+NIL = Leaf()
 
 
-def create_node(key) -> Node:
+def create_node(key) -> RBNode:
     '''
     Creates a new red node containing the key
     :param key:
     :return: formed Node
     '''
-    node = Node(key)
-    node.l = node.r = NIL
+    node = RBNode(key)
+    node.l = node.r = node.p = NIL
     return node
 
 
@@ -43,8 +47,8 @@ class RBTree:
     '''
 
     def __init__(self):
-        self._root = NIL
-        self._size = 0
+        self.root = NIL
+        self.size = 0
 
     def insert(self, key):
         '''
@@ -60,28 +64,30 @@ class RBTree:
         :param key:
         :return:
         '''
-        self._size += 1
 
-        x = self._root
-        y = NIL
-        z = create_node(key)
+        x, y = self.root, NIL
 
         while x is not NIL:
             y = x
-            x = x.l if z.x <= x.x else x.r
+            if key == x.x:
+                return  # key already exists
+            x = x.l if key < x.x else x.r
 
+        z = create_node(key)
         z.p = y
 
         if y is NIL:
-            self._root = z
-        elif z.x < y.x:
+            self.root = z
+        elif key < y.x:
             y.l = z
         else:
             y.r = z
 
         self.insertion_fixup(z)
 
-    def insertion_fixup(self, z: Node):
+        self.size += 1
+
+    def insertion_fixup(self, z: RBNode):
         """
         This maintains the red-black tree property after insertion of new node z
         in tree.
@@ -135,8 +141,7 @@ class RBTree:
                 uncle = z.p.p.r
 
                 if uncle.color is RED:  # case1
-                    z.p.color = BLACK
-                    uncle.color = BLACK
+                    z.p.color = uncle.color = BLACK
                     z.p.p.color = RED
                     z = z.p.p
                 else:
@@ -164,9 +169,9 @@ class RBTree:
                     z.p.p.color = RED
                     self.left_rotation(z.p.p)
 
-        self._root.color = BLACK
+        self.root.color = BLACK
 
-    def left_rotation(self, x: Node):
+    def left_rotation(self, x: RBNode):
         y = x.r
         x.r = y.l
         '''
@@ -184,7 +189,7 @@ class RBTree:
         y.p = x.p
 
         if x.p is NIL:
-            self._root = y
+            self.root = y
         elif x is x.p.l:
             x.p.l = y
         else:
@@ -193,7 +198,7 @@ class RBTree:
         y.l = x
         x.p = y
 
-    def right_rotation(self, y: Node):
+    def right_rotation(self, y: RBNode):
         x = y.l
 
         '''
@@ -204,7 +209,6 @@ class RBTree:
                  / \                                 / \
                 A   B                               B   G
         '''
-
         y.l = x.r
 
         if x.r is not NIL:
@@ -213,7 +217,7 @@ class RBTree:
         x.p = y.p
 
         if y.p is NIL:
-            self._root = x
+            self.root = x
         elif y is y.p.l:
             y.p.l = x
         else:
@@ -223,7 +227,7 @@ class RBTree:
         y.p = x
 
     @staticmethod
-    def _pre_order(node: Node):
+    def _pre_order(node: RBNode):
         if node.l is not NIL:
             RBTree._pre_order(node.l)
 
@@ -233,30 +237,30 @@ class RBTree:
             RBTree._pre_order(node.r)
 
     def pre_order(self):
-        if self._root is not NIL:
-            RBTree._pre_order(self._root)
+        if self.root is not NIL:
+            RBTree._pre_order(self.root)
         else:
             print('No Nodes')
 
     @staticmethod
-    def _height(n: Node):
+    def _height(n: RBNode):
         return 0 if n is NIL or n.l is n.r else 1 + max(RBTree._height(n.l),
                                                         RBTree._height(n.r))
 
     def height(self):
-        return RBTree._height(self._root)
+        return RBTree._height(self.root)
 
     @staticmethod
-    def _internal_nodes(n: Node):
+    def _internal_nodes(n: RBNode):
         if n.l is n.r:
             return 0
         return 1 + RBTree._internal_nodes(n.l) + RBTree._internal_nodes(n.r)
 
     def internal_nodes(self):
-        return RBTree._internal_nodes(self._root)
+        return RBTree._internal_nodes(self.root)
 
     @staticmethod
-    def _external_node(n: Node):
+    def _external_node(n: RBNode):
         if n is NIL:
             return 0
 
@@ -266,22 +270,15 @@ class RBTree:
         return RBTree._external_node(n.l) + RBTree._external_node(n.r)
 
     def external_node(self):
-        return RBTree._external_node(self._root)
+        return RBTree._external_node(self.root)
 
     def __len__(self):
-        return self._size
+        return self.size
 
     def __bool__(self):
-        return self._root is not NIL
+        return self.root is not NIL
 
-    @staticmethod
-    def tree_min(n: Node):
-        while n.l is not NIL:
-            n = n.l
-
-        return n
-
-    def transplant(self, u: Node, v: Node):
+    def transplant(self, u: RBNode, v: RBNode):
         """
         Replaces node u with node v.
         :param u:
@@ -289,24 +286,24 @@ class RBTree:
         :return:
         """
 
-        if u is self._root:
-            self._root = v
+        if u is self.root:
+            self.root = v
         elif u is u.p.l:
             u.p.l = v
         else:
             u.p.r = v
 
-        v.p = u.p  # no need to check if v is NIL
+        if v is not NIL:
+            v.p = u.p
 
     def delete_key(self, key):
         x = self.find(key)
 
-        if x is not None:
+        if x is not NIL:
             self.delete(x)
 
     def find(self, key):
-        x = self._root
-        print(x)
+        x = self.root
         while x is not NIL:
             if x.x == key:
                 return x
@@ -314,10 +311,9 @@ class RBTree:
                 x = x.r
             else:
                 x = x.l
+        return x
 
-        return None
-
-    def delete(self, z: Node):
+    def delete(self, z: RBNode):
         '''
         deleting a node from tree
 
@@ -364,7 +360,7 @@ class RBTree:
             x = z.l
             self.transplant(z, x)
         else:
-            y = RBTree.tree_min(z.r)  # finding successor to replace z
+            y = find_min(z.r, NIL)  # finding successor to replace z
             y_col = y.color
             x = y.r
 
@@ -379,19 +375,22 @@ class RBTree:
 
             y.color = z.color
 
-        self._size -= 1
-        if y_col is BLACK:
+        self.size -= 1
+
+        if y_col is BLACK and x is not NIL:
             self.deletion_fix_up(x)
 
-    def deletion_fix_up(self, x: Node):
-        while x is not self._root and x.color is BLACK:
+    def deletion_fix_up(self, x: RBNode):
+        while x is not self.root and x.color is BLACK:
             if x is x.p.l:
                 w = x.p.r
+
                 if w.color is RED:
                     w.color = BLACK
                     x.p.color = RED
                     self.left_rotation(x.p)
                     w = x.p.r
+
                 if w.l.color is w.r.color is BLACK:
                     w.color = RED
                     x = x.p
@@ -405,15 +404,15 @@ class RBTree:
                     w.color = x.p.color
                     x.p.color = w.r.color = BLACK
                     self.left_rotation(x.p)
-                    x = self._root
+                    x = self.root
             else:
                 w = x.p.l
+
                 if w.color is RED:
                     w.color = BLACK
                     x.p.color = RED
                     self.right_rotation(x.p)
                     w = x.p.l
-
                 if w.r.color is w.l.color is BLACK:
                     w.color = RED
                     x = x.p
@@ -422,22 +421,11 @@ class RBTree:
                         w.r.color = BLACK
                         w.color = RED
                         self.left_rotation(w)
-                        x = x.p.l
+                        w = x.p.l
+
                     w.color = x.p.color
                     x.p.color = w.l.color = BLACK
                     self.right_rotation(x.p)
-                    x = self._root
+                    x = self.root
 
         x.color = BLACK
-
-
-if __name__ == '__main__':
-    import random
-
-    data = [random.randint(1, 10000) for _ in range(1000)]
-    tree = RBTree()
-
-    for x in data:
-        tree.insert(x)
-    for x in data:
-        tree.delete_key(x)
