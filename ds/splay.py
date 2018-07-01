@@ -1,4 +1,4 @@
-from ds.utils import Node, Tree
+from ds.tree import Node, Tree
 
 
 class Splay(Tree):

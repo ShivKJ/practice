@@ -1,12 +1,13 @@
 from setuptools import setup
 
 setup(
-    name='practice_python',
-    version='0.1',
-    packages=['ds', 'exp', 'exp.using_graphviz', 'other', 'to_be_checked', 'numericalMethods', 'dynamicProgramming'],
+    name='algo',
+    version='',
+    packages=['ds', 'algo', 'numericalMethods', 'dp'],
     url='',
     license='',
-    author='shiv',
+    author='skj',
     author_email='',
-    description=''
+    description='',
+    tmp=''
 )

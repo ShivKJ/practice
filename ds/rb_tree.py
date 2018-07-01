@@ -1,4 +1,4 @@
-from ds.utils import Node, find_min
+from ds.tree import Node, find_min
 
 RED = True
 BLACK = False
@@ -11,16 +11,11 @@ class RBNode(Node):
         super().__init__(x)
         self.color = color
 
-
-class Leaf(RBNode):
-    def __init__(self):
-        super().__init__(color=BLACK)
-
     def __str__(self):
-        return 'NIL'
+        return str(self) if self is not NIL else 'NIL'
 
 
-NIL = Leaf()
+NIL = RBNode()
 
 
 def create_node(key) -> RBNode:

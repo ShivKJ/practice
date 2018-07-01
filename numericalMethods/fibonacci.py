@@ -1,4 +1,5 @@
-from numpy import array, diag, linalg
+from numpy import array, diag
+from numpy.linalg import inv
 
 LAMBDA = (1 + 5 ** 0.5) / 2
 
@@ -8,7 +9,7 @@ NORMALIZATION2 = ((1 / LAMBDA) ** 2 + 1) ** 0.5
 P = array([[LAMBDA / NORMALIZATION1, -1 / LAMBDA / NORMALIZATION2],
            [1 / NORMALIZATION1, 1 / NORMALIZATION2]])
 
-P_INV = linalg.inv(P)
+P_INV = inv(P)
 
 X = array([1, 0])
 

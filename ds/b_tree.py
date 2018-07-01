@@ -1,4 +1,4 @@
-from ds.utils import Tree
+from ds.tree import Tree
 
 
 class BTree(Tree):

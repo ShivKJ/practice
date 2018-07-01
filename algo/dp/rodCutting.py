@@ -1,5 +1,4 @@
-import numpy as np
-from numpy import ndarray
+from numpy import inf, ndarray, zeros
 
 '''
 
@@ -29,7 +28,7 @@ def max_revenue(p: ndarray, n: int):
     :return:
     '''
 
-    optimal = np.zeros(n + 1, dtype=p.dtype)
+    optimal = zeros(n + 1, dtype=p.dtype)
 
     for i in range(1, n + 1):
         optimal[i] = max(optimal[:i] + p[:i][::-1])
@@ -38,11 +37,11 @@ def max_revenue(p: ndarray, n: int):
 
 
 def extended_bottom_up(price: ndarray, length: int):
-    optimal = np.zeros(length + 1, dtype=price.dtype)
-    cut = np.zeros(length + 1, dtype=price.dtype)
+    optimal = zeros(length + 1, dtype=price.dtype)
+    cut = zeros(length + 1, dtype=price.dtype)
 
     for j in range(1, length + 1):
-        q = -np.inf
+        q = -inf
         for i in range(1, j + 1):
             if q < price[i - 1] + optimal[j - i]:
                 q = price[i - 1] + optimal[j - i]

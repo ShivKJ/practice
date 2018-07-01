@@ -1,4 +1,4 @@
-from ds.utils import Node, find_min, Tree
+from ds.tree import Node, Tree, find_min
 
 
 class AVLNode(Node):
@@ -116,3 +116,5 @@ class AVL(Tree):
 if __name__ == '__main__':
     tree = AVL()
     [tree.insert(x) for x in range(1000)]
+    for i in range(1000):
+        tree.delete(i)
