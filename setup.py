@@ -1,13 +1,13 @@
 from setuptools import setup
 
 setup(
-    name='algo',
+    name='practice',
     version='',
-    packages=['ds', 'algo', 'numericalMethods', 'dp'],
+    packages=['ds', 'algo', 'algo.dp', 'operationR', 'operationR.initialialSolution',
+              'operationR.initialialSolution.test', 'numericalMethods'],
     url='',
     license='',
-    author='skj',
-    author_email='',
-    description='',
-    tmp=''
+    author='Shiv',
+    author_email='shivkj001@gmail.com',
+    description=''
 )
