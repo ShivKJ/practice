@@ -4,7 +4,7 @@ setup(
     name='practice',
     version='',
     packages=['ds', 'algo', 'algo.dp', 'operationR', 'operationR.initialialSolution',
-              'operationR.initialialSolution.test', 'numericalMethods'],
+              'numericalMethods'],
     url='',
     license='',
     author='Shiv',

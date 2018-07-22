@@ -21,7 +21,7 @@ def initialize_logger(logger_name):
 
     # --------------------------Creating Formatter----------------------------------
     fmt = Formatter('%(asctime)s %(name)s %(levelname)s '
-                    '%(pathname)s [%(filename)s] '
+                    '%(module)s [%(filename)s] '
                     '[%(lineno)d] %(message)s')
 
     INDIA = gettz('Asia/Kolkata')
@@ -41,7 +41,7 @@ def initialize_logger(logger_name):
                                          .date()) + '.log')
 
     fh = RotatingFileHandler(LOG_FILE,
-                             maxBytes=1024 * 1024 * 8,
+                             maxBytes=1024 * 1024 * 80,
                              backupCount=5)
     fh.setLevel(INFO)
     fh.setFormatter(fmt)
@@ -53,7 +53,7 @@ def initialize_logger(logger_name):
     sh.setLevel(INFO)
     logger.addHandler(sh)
     logger.info('Logger %s initialized', logger_name)
-    
+
     return logger
 
 

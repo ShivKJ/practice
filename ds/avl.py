@@ -115,6 +115,8 @@ class AVL(Tree):
 
 if __name__ == '__main__':
     tree = AVL()
-    [tree.insert(x) for x in range(1000)]
+    for e in range(1000):
+        tree.insert(e)
+
     for i in range(1000):
         tree.delete(i)
