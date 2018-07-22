@@ -7,8 +7,8 @@ from operationR.initialialSolution.vogel import Vogel
 
 
 def northwest(supply: ndarray, demand: ndarray) -> ndarray:
-    '''
-    Implemenents northwest of initializing initial solution.
+    """
+    Northwest method for getting initial solution.
 
         0   0   0   0 | 2
                       |
@@ -35,7 +35,8 @@ def northwest(supply: ndarray, demand: ndarray) -> ndarray:
     :param supply:
     :param demand:
     :return:
-    '''
+    """
+
     supply = supply.copy()
     demand = demand.copy()
 

@@ -1,6 +1,6 @@
-from logging import getLogger, DEBUG
+from logging import DEBUG, getLogger
 
-from numpy import ndarray, where, partition, array, zeros_like
+from numpy import array, ndarray, partition, where, zeros_like
 
 from logger import LOGGER_NAME
 
@@ -12,12 +12,13 @@ _SUPPLY_AXIS, _DEMAND_AXIS = 0, 1
 
 
 def _diff_of_2_min(cost_matrix: ndarray, axis: int) -> ndarray:
-    '''
+    """
     Finds diff of two minimum; either row wise(DEMAND AXIS) operationR column wise(SUPPLY AXIS)
     :param cost_matrix:
     :param axis:
     :return:
-    '''
+    """
+
     if axis is _DEMAND_AXIS:
         cost_matrix = cost_matrix.T
 
@@ -27,12 +28,12 @@ def _diff_of_2_min(cost_matrix: ndarray, axis: int) -> ndarray:
 
 
 def _max_arg(arr: ndarray) -> int:
-    '''
+    """
     Finds max arg which don't corresponds to MAX value.
     If no such element is present then return 0
     :param arr:
     :return:
-    '''
+    """
 
     prev = None
     idx = 0
@@ -46,7 +47,7 @@ def _max_arg(arr: ndarray) -> int:
 
 
 class Vogel:
-    '''
+    """
         Implementation Note: Vogel method is used to find better initial solution from Northwest-
                             method.
                             It also considers CostMatrix while finding initial solution.
@@ -144,7 +145,7 @@ class Vogel:
             0	0	0	0
             #	#	#	#
             *	*	*	*
-    '''
+    """
 
     def __init__(self, cost_matrix: ndarray, supply: ndarray, demand: ndarray):
         # problem should be balanced
