@@ -1,4 +1,25 @@
-from numpy import inf, ndarray, zeros
+from numpy import array, inf, ndarray, zeros
+from ortools.linear_solver.pywraplp import Solver
+
+
+def max_revenue_lp(price: ndarray, n: int = None):
+    price = price[1:]
+
+    if n is None:
+        n = price.size
+
+    solver = Solver('rod-cutting', Solver.SCIP_MIXED_INTEGER_PROGRAMMING)
+
+    x = [solver.IntVar(0, n // i, str(i)) for i in range(1, n + 1)]
+
+    objective = solver.Sum([x_i * p for x_i, p in zip(x, price)])
+
+    solver.Maximize(objective)
+    solver.Add(solver.Sum([i * x_i for i, x_i in enumerate(x, 1)]) <= n)
+
+    solver.Solve()
+
+    return [int(x_i.SolutionValue()) for x_i in x]
 
 
 def max_revenue(price: ndarray, n: int = None):
@@ -63,6 +84,8 @@ def extended_bottom_up(price: ndarray, n: int = None):
 def print_rod_cut(s, n):
     print('length of rod cutting: ', end='')
 
+    n -= 1
+
     while n > 0:
         cut_at = s[n]
         n -= cut_at
@@ -73,3 +96,12 @@ def print_rod_cut(s, n):
             print(cut_at)
 
     print()
+
+
+if __name__ == '__main__':
+    prices = array([0, 1, 5, 8, 9, 10, 17, 17, 20])
+    print(max_revenue_lp(prices))
+    print(sum(i * p for p, i in zip(prices[1:], max_revenue_lp(prices))))
+    print(max_revenue(prices))
+
+    print_rod_cut(extended_bottom_up(prices)[1], len(prices))
