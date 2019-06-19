@@ -9,7 +9,6 @@ def exact_subset_sum(S, t: int):
     :param S: collection of number
     :param t: subset sum
     :return: True if there exists such a subset
-
     """
 
     L = {0}
