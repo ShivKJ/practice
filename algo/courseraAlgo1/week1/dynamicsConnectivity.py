@@ -1,29 +1,31 @@
-from typing import List
+class UnionFind:
+    def __init__(self, n: int):
+        self._cache = list(range(n))
 
+    def connect(self, a: int, b: int):
+        self._cache[self._parent(b)] = self._parent(a)
 
-def get_parent(a: int, cache: List[int]) -> int:
-    p = a
-    gp = cache[a]
+    def connected(self, a: int, b: int) -> bool:
+        return self._parent(a) == self._parent(b)
 
-    while p != gp:
-        p, gp = gp, cache[gp]
+    def _parent(self, a: int) -> int:
+        if a == self._cache[a]:
+            return a
 
-    return p
+        p = self._parent(self._cache[a])
+        self._cache[a] = p
 
-
-def connect(a: int, b: int, cache: List[int]):
-    cache[get_parent(b, cache)] = get_parent(a, cache)
-
-
-def connected(a: int, b: int, cache: List[int]) -> bool:
-    return get_parent(a, cache) == get_parent(b, cache)
+        return p
 
 
 if __name__ == '__main__':
-    cache = list(range(5))
+    uf = UnionFind(5)
 
-    connect(0, 1, cache)
-    connect(1, 2, cache)
-    connect(3, 2, cache)
-    print(cache)
-    print(connected(2, 3, cache))
+    uf.connect(0, 1)
+    uf.connect(1, 2)
+    uf.connect(3, 2)
+
+    print(uf.connected(2, 3))
+    print(uf.connected(3, 2))
+    print(uf.connected(0, 2))
+    print(uf.connected(0, 4))
