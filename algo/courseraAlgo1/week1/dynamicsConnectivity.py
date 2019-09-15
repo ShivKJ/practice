@@ -9,13 +9,11 @@ class UnionFind:
         return self._parent(a) == self._parent(b)
 
     def _parent(self, a: int) -> int:
-        if a == self._cache[a]:
-            return a
+        while a != self._cache[a]:
+            self._cache[a] = self._cache[self._cache[a]]
+            a = self._cache[a]
 
-        p = self._parent(self._cache[a])
-        self._cache[a] = p
-
-        return p
+        return a
 
 
 if __name__ == '__main__':
