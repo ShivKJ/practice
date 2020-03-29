@@ -1,7 +1,7 @@
 """
 author: Shiv
 email: shivkj001@gmail.com
-date: 3/28/20
+date: 3/29/20
 
 MIT License
 
@@ -27,39 +27,21 @@ SOFTWARE.
 
 """
 
-
-class ProductOfNumbers:
-    def __init__(self):
-        self.mult = [1]
-        self.last_zero_index = -1
-
-    def add(self, num: int) -> None:
-        x = num
-
-        if x == 0:
-            x = 1
-            self.last_zero_index = len(self.mult) - 1
-
-        if self.mult:
-            x *= self.mult[-1]
-
-        self.mult.append(x)
-
-    def getProduct(self, k: int) -> int:
-        if self.last_zero_index > -1 and k >= len(self.mult) - self.last_zero_index - 1:
-            return 0
-
-        return int(self.mult[-1] / self.mult[-(k + 1)])
+from typing import List
 
 
-if __name__ == '__main__':
-    p = ProductOfNumbers()
-    p.add(1)
-    # p.add(0)
-    p.add(2)
-    p.add(3)
-    p.add(0)
-    p.add(4)
-    p.add(5)
+class Solution:
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
 
-    print(p.getProduct(3))
+        for j in range(1, n):
+            grid[0][j] += grid[0][j - 1]
+
+        for i in range(1, m):
+            grid[i][0] += grid[i - 1][0]
+
+        for i in range(1, m):
+            for j in range(1, n):
+                grid[i][j] += min(grid[i][j - 1], grid[i - 1][j])
+
+        return grid[-1][-1]

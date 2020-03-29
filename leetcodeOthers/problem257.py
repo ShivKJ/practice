@@ -1,7 +1,7 @@
 """
 author: Shiv
 email: shivkj001@gmail.com
-date: 3/28/20
+date: 3/29/20
 
 MIT License
 
@@ -28,38 +28,37 @@ SOFTWARE.
 """
 
 
-class ProductOfNumbers:
-    def __init__(self):
-        self.mult = [1]
-        self.last_zero_index = -1
-
-    def add(self, num: int) -> None:
-        x = num
-
-        if x == 0:
-            x = 1
-            self.last_zero_index = len(self.mult) - 1
-
-        if self.mult:
-            x *= self.mult[-1]
-
-        self.mult.append(x)
-
-    def getProduct(self, k: int) -> int:
-        if self.last_zero_index > -1 and k >= len(self.mult) - self.last_zero_index - 1:
-            return 0
-
-        return int(self.mult[-1] / self.mult[-(k + 1)])
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
 
 
-if __name__ == '__main__':
-    p = ProductOfNumbers()
-    p.add(1)
-    # p.add(0)
-    p.add(2)
-    p.add(3)
-    p.add(0)
-    p.add(4)
-    p.add(5)
+from collections import deque
+from typing import Deque, List
 
-    print(p.getProduct(3))
+
+class Solution:
+    def binaryTreePaths(self, root: TreeNode) -> List[str]:
+        container = []
+
+        if root:
+            Solution._path(root, deque(), container)
+
+        return container
+
+    @staticmethod
+    def _path(root: TreeNode, path: Deque[int], container: List):
+        path.append(root.val)
+
+        if not root.left and not root.right:
+            container.append('->'.join(map(str, path)))
+
+        if root.left:
+            Solution._path(root.left, path, container)
+
+        if root.right:
+            Solution._path(root.right, path, container)
+
+        path.pop()

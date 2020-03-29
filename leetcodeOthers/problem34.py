@@ -27,39 +27,21 @@ SOFTWARE.
 
 """
 
+from typing import List
+from bisect import bisect_left, bisect_right
 
-class ProductOfNumbers:
-    def __init__(self):
-        self.mult = [1]
-        self.last_zero_index = -1
 
-    def add(self, num: int) -> None:
-        x = num
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        if not nums:
+            return [-1, -1]
 
-        if x == 0:
-            x = 1
-            self.last_zero_index = len(self.mult) - 1
+        idx = bisect_left(nums, target)
+        if idx >= len(nums) or nums[idx] != target:
+            return [-1, -1]
 
-        if self.mult:
-            x *= self.mult[-1]
-
-        self.mult.append(x)
-
-    def getProduct(self, k: int) -> int:
-        if self.last_zero_index > -1 and k >= len(self.mult) - self.last_zero_index - 1:
-            return 0
-
-        return int(self.mult[-1] / self.mult[-(k + 1)])
+        return [idx, bisect_right(nums, target) - 1]
 
 
 if __name__ == '__main__':
-    p = ProductOfNumbers()
-    p.add(1)
-    # p.add(0)
-    p.add(2)
-    p.add(3)
-    p.add(0)
-    p.add(4)
-    p.add(5)
-
-    print(p.getProduct(3))
+    print(Solution().searchRange([2, 2], 3))

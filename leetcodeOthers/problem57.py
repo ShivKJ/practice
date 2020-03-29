@@ -27,39 +27,39 @@ SOFTWARE.
 
 """
 
+from bisect import bisect_left
+from typing import List
 
-class ProductOfNumbers:
-    def __init__(self):
-        self.mult = [1]
-        self.last_zero_index = -1
 
-    def add(self, num: int) -> None:
-        x = num
+class Solution:
+    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:
+        if not intervals:
+            return [newInterval]
 
-        if x == 0:
-            x = 1
-            self.last_zero_index = len(self.mult) - 1
+        idx = bisect_left(intervals, newInterval)
+        output = intervals[: idx]
 
-        if self.mult:
-            x *= self.mult[-1]
+        if not output:
+            prev = newInterval
+            output.append(prev)
+        else:
+            prev = output[-1]
+            if prev[1] >= newInterval[0]:
+                prev[1] = max(prev[1], newInterval[1])
+            else:
+                output.append(newInterval)
+                prev = newInterval
 
-        self.mult.append(x)
+        for i in range(idx, len(intervals)):
+            curr = intervals[i]
 
-    def getProduct(self, k: int) -> int:
-        if self.last_zero_index > -1 and k >= len(self.mult) - self.last_zero_index - 1:
-            return 0
-
-        return int(self.mult[-1] / self.mult[-(k + 1)])
+            if prev[1] >= curr[0]:
+                prev[1] = max(prev[1], curr[1])
+            else:
+                prev = curr
+                output.append(prev)
+        return output
 
 
 if __name__ == '__main__':
-    p = ProductOfNumbers()
-    p.add(1)
-    # p.add(0)
-    p.add(2)
-    p.add(3)
-    p.add(0)
-    p.add(4)
-    p.add(5)
-
-    print(p.getProduct(3))
+    print(Solution().insert([[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], [4, 8]))

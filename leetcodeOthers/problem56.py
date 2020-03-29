@@ -26,40 +26,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 """
+from typing import List
+from operator import itemgetter
 
 
-class ProductOfNumbers:
-    def __init__(self):
-        self.mult = [1]
-        self.last_zero_index = -1
+class Solution:
+    @staticmethod
+    def overlap(a, b):
+        return a[1] >= b[0]
 
-    def add(self, num: int) -> None:
-        x = num
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        if not intervals:
+            return []
 
-        if x == 0:
-            x = 1
-            self.last_zero_index = len(self.mult) - 1
+        intervals.sort(key=itemgetter(0))
 
-        if self.mult:
-            x *= self.mult[-1]
+        output = []
+        itr = iter(intervals)
 
-        self.mult.append(x)
+        prev = list(next(itr))
+        output.append(prev)
 
-    def getProduct(self, k: int) -> int:
-        if self.last_zero_index > -1 and k >= len(self.mult) - self.last_zero_index - 1:
-            return 0
+        for curr in itr:
+            if Solution.overlap(prev, curr):
+                prev[1] = max(prev[1], curr[1])
+            else:
+                prev = curr
+                output.append(prev)
 
-        return int(self.mult[-1] / self.mult[-(k + 1)])
-
-
-if __name__ == '__main__':
-    p = ProductOfNumbers()
-    p.add(1)
-    # p.add(0)
-    p.add(2)
-    p.add(3)
-    p.add(0)
-    p.add(4)
-    p.add(5)
-
-    print(p.getProduct(3))
+        return output

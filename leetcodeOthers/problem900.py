@@ -27,39 +27,42 @@ SOFTWARE.
 
 """
 
-
-class ProductOfNumbers:
-    def __init__(self):
-        self.mult = [1]
-        self.last_zero_index = -1
-
-    def add(self, num: int) -> None:
-        x = num
-
-        if x == 0:
-            x = 1
-            self.last_zero_index = len(self.mult) - 1
-
-        if self.mult:
-            x *= self.mult[-1]
-
-        self.mult.append(x)
-
-    def getProduct(self, k: int) -> int:
-        if self.last_zero_index > -1 and k >= len(self.mult) - self.last_zero_index - 1:
-            return 0
-
-        return int(self.mult[-1] / self.mult[-(k + 1)])
+from collections import deque
+from typing import List
 
 
+class RLEIterator:
+    """
+    This problem has run-time issue
+    """
+
+    def __init__(self, A: List[int]):
+        self.data = deque()
+
+        n = len(A) // 2
+
+        for i in range(n):
+            f, e = A[2 * i], A[2 * i + 1]
+            self.data.extend((e for _ in range(f)))
+
+    def next(self, n: int) -> int:
+        if len(self.data) < n:
+            return -1
+
+        out = None
+
+        for _ in range(n):
+            out = self.data.popleft()
+
+        return out
+
+
+# Your RLEIterator object will be instantiated and called as such:
+# obj = RLEIterator(A)
+# param_1 = obj.next(n)
 if __name__ == '__main__':
-    p = ProductOfNumbers()
-    p.add(1)
-    # p.add(0)
-    p.add(2)
-    p.add(3)
-    p.add(0)
-    p.add(4)
-    p.add(5)
-
-    print(p.getProduct(3))
+    rle = RLEIterator([3, 8, 0, 9, 2, 5])
+    print(rle.data)
+    print(rle.next(2))
+    print(rle.next(1))
+    print(rle.next(1))

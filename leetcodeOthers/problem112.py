@@ -28,38 +28,25 @@ SOFTWARE.
 """
 
 
-class ProductOfNumbers:
-    def __init__(self):
-        self.mult = [1]
-        self.last_zero_index = -1
-
-    def add(self, num: int) -> None:
-        x = num
-
-        if x == 0:
-            x = 1
-            self.last_zero_index = len(self.mult) - 1
-
-        if self.mult:
-            x *= self.mult[-1]
-
-        self.mult.append(x)
-
-    def getProduct(self, k: int) -> int:
-        if self.last_zero_index > -1 and k >= len(self.mult) - self.last_zero_index - 1:
-            return 0
-
-        return int(self.mult[-1] / self.mult[-(k + 1)])
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
 
 
-if __name__ == '__main__':
-    p = ProductOfNumbers()
-    p.add(1)
-    # p.add(0)
-    p.add(2)
-    p.add(3)
-    p.add(0)
-    p.add(4)
-    p.add(5)
+class Solution:
+    def hasPathSum(self, root: TreeNode, sum: int) -> bool:
+        if not root.left and not root.right:
+            return root.val == sum
 
-    print(p.getProduct(3))
+        if root.left:
+            has = self.hasPathSum(root.left, sum - root.val)
+            if has:
+                return True
+
+        if root.right:
+            return self.hasPathSum(root.right, sum - root.val)
+
+        return False
