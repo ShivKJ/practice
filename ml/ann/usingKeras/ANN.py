@@ -26,33 +26,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 """
+import tensorflow as tf
 
-from keras.datasets import mnist
-from keras.layers import Dense
-from keras.models import Sequential
-from sklearn.preprocessing import LabelBinarizer
+mnist = tf.keras.datasets.mnist
 
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
 
-X_train = X_train.reshape((len(X_train), -1)).astype(float)
-X_test = X_test.reshape((len(X_test), -1)).astype(float)
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
+    tf.keras.layers.Dropout(0.1),
+    tf.keras.layers.Dense(10)
+])
 
-input_dim = X_train.shape[-1]
+loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+model.compile(optimizer=tf.keras.optimizers.Adam(),
+              loss=loss_fn,
+              metrics=['accuracy'])
 
-X_train /= input_dim
-X_test /= input_dim
+model.fit(x_train, y_train, epochs=10, batch_size=1024,
+          workers=6, use_multiprocessing=True)
+probability_model = tf.keras.Sequential([
+    model,
+    tf.keras.layers.Softmax(),
+])
 
-lb = LabelBinarizer()
-y_train = lb.fit_transform(y_train)
-y_test = lb.transform(y_test)
-
-model = Sequential()
-
-model.add(Dense(32, input_dim=input_dim, activation='relu'))
-model.add(Dense(len(lb.classes_), activation='softmax'))
-
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-model.fit(X_train, y_train, use_multiprocessing=True)
-print(dict(zip(model.metrics_names,
-               model.evaluate(X_test, y_test, use_multiprocessing=True))))
+output = probability_model(x_test)
+output = tf.argmax(output, axis=1)
+print(output)
