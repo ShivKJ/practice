@@ -28,9 +28,6 @@ SOFTWARE.
 """
 import tensorflow as tf
 
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-x_train, x_test = x_train / 255.0, x_test / 255.0
-
 model = tf.keras.models.Sequential([
     tf.keras.layers.Flatten(dtype=tf.float32),
     tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
@@ -47,6 +44,10 @@ model.compile(
     metrics=['accuracy']
 )
 
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
 data = (
     tf.data.Dataset.from_tensor_slices((x_train, y_train))
         .shuffle(buffer_size=128)
@@ -61,8 +62,5 @@ model.fit(
 )
 
 output = model.predict(x_test)
-output = tf.argmax(output, axis=1)
-
-print(output)
+print(output[0])
 print(model.evaluate(x_test, y_test))
-print(model.evaluate(x_test))
