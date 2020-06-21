@@ -1,7 +1,7 @@
 """
 author: Shiv
 email: shivkj001@gmail.com
-date: 3/22/20
+date: 21/06/20
 
 MIT License
 
@@ -24,43 +24,23 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
 """
 import tensorflow as tf
 
 model = tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(dtype=tf.float32),
-    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
-    tf.keras.layers.Dropout(0.1),
-    tf.keras.layers.Dense(10),
-    tf.keras.layers.Softmax(),
-])
-
-loss_fn = tf.keras.losses.SparseCategoricalCrossentropy()
-
-model.compile(
-    optimizer=tf.keras.optimizers.Adam(),
-    loss=loss_fn,
-    metrics=['accuracy']
+    tf.keras.layers.Conv2D(filters=64, kernel_size=3, activation='relu', input_shape=(32, 32, 3)),
+    tf.keras.layers.MaxPool2D(pool_size=2),
+    tf.keras.layers.Conv2D(filters=32, kernel_size=3, activation='relu'),
+    tf.keras.layers.MaxPool2D(pool_size=3),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(10)]
 )
 
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-
+model.compile(optimizer='adam', loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics='accuracy')
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
-data = (
-    tf.data.Dataset.from_tensor_slices((x_train, y_train))
-        .shuffle(buffer_size=128)
-        .batch(32)
-        .repeat(2)
-        .prefetch(4)
-)
-
-model.fit(
-    data,
-    epochs=2
-)
-
-output = model.predict(x_test)
-print(output[0])
-print(model.evaluate(x_test, y_test))
+model.fit(x_train, y_train, use_multiprocessing=True, workers=6, epochs=5)
+model.evaluate(x_test,y_test)
