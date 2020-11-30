@@ -1,61 +1,55 @@
-def partitioning(arr, l, r):
-    p = arr[r]
-
-    idx = l - 1
-    # element at idx+1 will either be greater than p or idx+1 will be equal to r
-
-    for i in range(l, r):
-        if arr[i] <= p:
-            idx += 1
-            arr[idx], arr[i] = arr[i], arr[idx]
-
-    idx += 1
-    arr[idx], arr[r] = arr[r], arr[idx]
-
-    return idx
+from typing import List
 
 
-# def tmp(arr, l, r):
-#     p = arr[l]
-#     t = l
-#
-#     while l <= r:
-#         if arr[l] >= p:
-#             j = get_next_min(arr, p, l + 1, r)
-#             if j != -1:
-#                 arr[l], arr[j] = arr[j], arr[l]
-#             else:
-#                 return max(t, l - 1)
-#         l += 1
-#
-#     return r
-#
-#
-# def get_next_min(arr, e, l, r):
-#     for i in range(l, r + 1):
-#         if arr[i] < e:
-#             return i
-#
-#     for i in range(l, r + 1):
-#         if arr[i] == e:
-#             return i
-#
-#     return -1
+def partitioning(arr: List[float], start_index: int, end_index: int):
+    """
+    between "start_index" and "end_index",
+    :param arr:
+    :param start_index:
+    :param end_index:
+    :return:
+    """
+    pivot_element = arr[end_index]  # in the end, all the elements less than this element will be on left of this
+    # element and elements larger than this will be on right side of this element.
+
+    j = start_index - 1
+
+    for i in range(start_index, end_index):  # start_index + 1, start_index + 2, ... end_index - 1
+        if arr[i] <= pivot_element:  # if ith element is smaller than or equal to pivot element, then swapping it
+            # with the element which is larger than pivot element that is farther from ith index on left side
+            j += 1
+            arr[j], arr[i] = arr[i], arr[j]
+
+    j += 1
+    arr[j], arr[end_index] = arr[end_index], arr[j]
+
+    return j
 
 
-def sorting(arr, l, r):
-    if l < r:
-        p_idx = partitioning(arr, l, r)
-        # p_idx = tmp(arr, l, r)
+def sorting(arr: List[float], start_index: int = None, end_index: int = None):
+    """
+    sorting array between start_index and end_index (both inclusive), in place
+    :param arr:
+    :param start_index:
+    :param end_index:
+    """
+    start_index = start_index or 0
+    end_index = end_index or len(arr) - 1
 
-        sorting(arr, l, p_idx - 1)
-        sorting(arr, p_idx + 1, r)
+    if start_index < end_index:
+        pivot_index = partitioning(arr, start_index, end_index)  # element at this index is at its sorted position
+
+        sorting(arr, start_index, pivot_index - 1)
+        sorting(arr, pivot_index + 1, end_index)
 
 
 if __name__ == '__main__':
-    arr = [1, 4, 2, 5, 6, 7, 1, 0, 4]
-    output = sorted(arr)
-    print(arr)
-    # print(tmp(arr, 0, len(arr) - 1))
-    sorting(arr, 0, len(arr) - 1)
-    print(arr, arr == output)
+    # array = [1, 4, 2, 5, 6, 7, 1, 0, 4]
+    # output = sorted(array)
+    # print(array)
+    # sorting(array, 0, len(array) - 1)
+    # print(array, array == output)
+    array = [9, 8, 1]
+    # sorting(array)
+    print(partitioning(array, 0, 2))
+    print(array)
