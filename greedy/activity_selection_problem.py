@@ -1,28 +1,15 @@
+from dataclasses import dataclass
+from operator import attrgetter
 from typing import List
 
 
+@dataclass(frozen=True)
 class Activity:
     """
     Defining an activity by it's starting and ending time point
     """
-
-    def __init__(self, start, end):
-        self._start = start
-        self._end = end
-
-    @property
-    def start(self):
-        return self._start
-
-    @property
-    def end(self):
-        return self._end
-
-    def __str__(self):
-        return 'start={};end={}'.format(self.start, self.end)
-
-    def __repr__(self):
-        return str(self)
+    start: float
+    end: float
 
 
 def get_activities(acts: List[Activity]) -> List[Activity]:
@@ -50,7 +37,7 @@ def get_activities(acts: List[Activity]) -> List[Activity]:
     output = []
 
     if acts:
-        itr_acts = iter(sorted(acts, key=lambda act: act.end))
+        itr_acts = iter(sorted(acts, key=attrgetter('end')))
 
         curr = next(itr_acts)
 
