@@ -1,35 +1,30 @@
+from dataclasses import dataclass
+from operator import attrgetter
 from typing import List
 
 
+@dataclass
 class Item:
     """
     An item is defined by its weight and value.
     """
-
-    def __init__(self, weight, value):
-        self._weight = weight
-        self._value = value
+    weight: float
+    value: float
 
     @property
-    def weight(self):
-        return self._weight
-
-    @property
-    def value(self):
-        return self._value
-
-    @property
-    def rate(self):
+    def rate(self) -> float:
+        """
+        :return: value per unit weight
+        """
         return self.value / self.weight
 
-    def __str__(self):
-        return 'weight={};value={}'.format(self.weight, self.value)
 
-    def __repr__(self):
-        return str(self)
-
-
-def non_zero(x, tol=1e-8):
+def non_zero(x, tol=1e-8) -> bool:
+    """
+    :param x:
+    :param tol:
+    :return: True if absolute value of x is less than tol
+    """
     return abs(x) > tol
 
 
@@ -53,7 +48,7 @@ def get_items(items: List[Item], max_cap) -> List[Item]:
     :return: selected items.
     """
 
-    items = sorted(items, key=lambda x: x.rate, reverse=True)
+    items = sorted(items, key=attrgetter('rate'), reverse=True)
 
     output = []
 
