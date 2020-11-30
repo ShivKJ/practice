@@ -40,7 +40,14 @@ def is_on(a: ndarray, b: ndarray, c: ndarray, tol=10e-8) -> bool:
     :param tol:
     :return: True if c lies on line segment ab
     """
-    return (norm(cross(a - b, b - c)) <= tol and
-            ((np.all(a <= c) and np.all(c <= b))
-             or
-             (np.all(b <= c) and np.all(c <= a))))
+    return (
+            norm(cross(a - b, b - c)) <= tol
+
+            and
+
+            (
+                    (np.all(a <= c) and np.all(c <= b))
+                    or
+                    (np.all(b <= c) and np.all(c <= a))
+            )
+    )
