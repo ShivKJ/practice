@@ -22,7 +22,7 @@ def max_revenue_lp(price: ndarray, n: int = None):
     return [int(x_i.SolutionValue()) for x_i in x]
 
 
-def max_revenue(price: ndarray, n: int = None):
+def max_profit(profit: ndarray, n: int = None):
     """
     Optimal structure:
                     r[j] = max(p[i] + r[j-i]),   r[0] = 0
@@ -36,41 +36,49 @@ def max_revenue(price: ndarray, n: int = None):
           eg.       r[3] = max(p[1] + r[2], p[2] + r[1], p[3] + r[0])
                          = max(p[1] + r[2], p[2] + r[1], p[3])
 
-    Implementation Notes: Given a rod of length "n" (price.size - 1), cut it in pieces
-                          such that generated revenue is maximum.
+    Implementation Notes: Given a rod of length "n" (profit.size - 1), cut it in pieces
+                          such that generated profit is maximum.
     Example:
         import numpy as np
         prices = np.array([0, 1, 5, 8, 10, 13, 17, 18, 22, 25, 30])
-        print(max_revenue(arr))
+        print(max_profit(arr))
 
-    :param price: price of length segment.
+    :param profit: ith index represent profit of (i+1) length
     :param n: length of rod to be cut
-    :return:
+    :return: total optimal profit
     """
 
     if n is None:
-        n = price.size - 1
+        n = profit.size - 1
 
-    optimal = zeros(n + 1, dtype=price.dtype)
+    optimal = zeros(n + 1, dtype=profit.dtype)
 
     for l in range(1, n + 1):
-        optimal[l] = max(optimal[:l] + price[l:0:-1])
+        optimal[l] = (
+                optimal[:l] +  # 0,  1,    2,    3,..., l-1 (optimal profit if rod is cut for length 1 to l-1)
+                profit[l:0:-1]  # l, l-1, l-2, l-3,...., 1   (profit of length of sizes 1 to l in reverse order)
+        ).max()
 
     return optimal[n]
 
 
-def extended_bottom_up(price: ndarray, n: int = None):
+def extended_bottom_up(profit: ndarray, n: int = None):
+    """
+    :param profit:
+    :param n: 
+    :return: 
+    """
     if n is None:
-        n = price.size - 1
+        n = profit.size - 1
 
-    optimal = zeros(n + 1, dtype=price.dtype)
-    cuts = zeros(n + 1, dtype=price.dtype)
+    optimal = zeros(n + 1, dtype=profit.dtype)  # value at ith index will be optimal profit if rod is but for ith length
+    cuts = zeros(n + 1, dtype=profit.dtype)  # value at ith index is size of one part of rod that is cut
 
     for l in range(1, n + 1):
         q = -inf
 
         for i in range(1, l + 1):
-            temp = price[i] + optimal[l - i]
+            temp = profit[i] + optimal[l - i]
 
             if q < temp:
                 q = temp
@@ -102,6 +110,6 @@ if __name__ == '__main__':
     prices = array([0, 1, 5, 8, 9, 10, 17, 17, 20])
     print(max_revenue_lp(prices))
     print(sum(i * p for p, i in zip(prices[1:], max_revenue_lp(prices))))
-    print(max_revenue(prices))
+    print(max_profit(prices))
 
     print_rod_cut(extended_bottom_up(prices)[1], len(prices))
