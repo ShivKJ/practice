@@ -27,7 +27,7 @@ def max_area(arr: List[int]):
             stack.push(i)
         else:
             out = stack.pop()
-            # area = max([area, arr[out]])
+            area = max([area, arr[out]])
 
     return area
 

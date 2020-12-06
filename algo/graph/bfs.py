@@ -46,6 +46,9 @@ class Vertex:
 
     info: dict = field(default_factory=dict, init=False)
 
+    def __post_init__(self):
+        self.info['color'] = Color.WHITE
+
     def __getitem__(self, item):
         return self.info[item]
 
@@ -57,6 +60,10 @@ class Vertex:
 
     def get(self, key, default):
         return self.info.setdefault(key, default)
+
+    @property
+    def uncolored(self) -> bool:
+        return self.info['color'] == Color.WHITE
 
 
 def bfs(v: Vertex):
@@ -71,7 +78,7 @@ def bfs(v: Vertex):
         u = q.popleft()
 
         for t in u.adjacent:
-            if t.get('color', Color.WHITE) is Color.WHITE:
+            if t.uncolored:
                 t['parent'] = u
                 t['distance'] = u['distance'] + 1
                 t['color'] = Color.GREY
@@ -89,14 +96,10 @@ def dfs(v: Vertex):
 
 def _dfs(v: Vertex, time):
     v['color'] = Color.GREY
-    time += 1
-    v['start'] = time
 
     for u in v.adjacent:
-        if u.get('color', Color.WHITE) is Color.WHITE:
+        if u.uncolored:
             u['parent'] = v
             _dfs(u, time)
 
     v['color'] = Color.BLACK
-    time += 1
-    v['end'] = time
