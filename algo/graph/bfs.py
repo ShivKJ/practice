@@ -94,12 +94,17 @@ def dfs(v: Vertex):
     _dfs(v, 0)
 
 
-def _dfs(v: Vertex, time):
+def _dfs(v: Vertex, time: int):
     v['color'] = Color.GREY
+    time += 1
+    v['start'] = time
 
     for u in v.adjacent:
-        if u.uncolored:
+        if u.uncolored:  # exploring all the uncolored adjacent neighbors
             u['parent'] = v
-            _dfs(u, time)
+            time = _dfs(u, time)
 
     v['color'] = Color.BLACK
+    time += 1
+    v['end'] = time
+    return time
