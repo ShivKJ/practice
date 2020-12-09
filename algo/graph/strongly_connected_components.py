@@ -17,7 +17,6 @@ class SCC:
         :return:
         """
         self._first_pass()
-        print(self.stack)
         return self._second_pass()
 
     def _second_pass(self) -> List[Set[Hashable]]:
