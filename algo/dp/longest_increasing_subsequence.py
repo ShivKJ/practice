@@ -1,12 +1,12 @@
 def longest_increasing_subsequence_mathematical_formulation(arr):
     """
-    let X[i] be bool variable which is 1 if ith value from array "arr" is selected in LIS.
+    let X[i] be bool variable which is 1 if ith value from array "arr" is selected in LIS, else 0.
 
-    objective function is simply  X[0] + X[1] + .... X[n-1]
+    objective function is simply  X[0] + X[1] + .... X[n-1], n = length of arr
 
-    Two elements arr[i] and arr[j] can not be part of LIS if arr[j] is more
-    than or equal to arr[i] and j < i, or equivalently
-                    X[i] + X[j] <= 1 if j < i and arr[j] >= arr[i] (for non decreasing case use arr[j] > arr[i])
+    Two elements arr[i] and arr[j] can not be part of LIS if arr[j] is more than or equal
+    to arr[i] and j < i, or equivalently
+                X[i] + X[j] <= 1 if j < i and arr[j] >= arr[i]  (for non decreasing case use arr[j] > arr[i])
 
     :param arr:
     :return: LIS length
