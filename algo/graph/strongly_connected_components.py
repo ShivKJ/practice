@@ -39,7 +39,7 @@ class SCC:
         output = []
 
         for vertex in self._stack_traversal:
-            self._dps(vertex, visited_vertices, is_first_pass_dfs=False)
+            self._dfs(vertex, visited_vertices, is_first_pass_dfs=False)
 
             new_visited_vertices = visited_vertices - visited_before_current_vertex_dfs
 
@@ -57,9 +57,9 @@ class SCC:
         visited_vertices = set()
 
         for vertex_index in self.vertices:
-            self._dps(vertex_index, visited_vertices)
+            self._dfs(vertex_index, visited_vertices)
 
-    def _dps(self, vertex: Hashable, visited_vertices: Set[Hashable], is_first_pass_dfs=True):
+    def _dfs(self, vertex: Hashable, visited_vertices: Set[Hashable], is_first_pass_dfs=True):
         """
         :param vertex:
         :param visited_vertices: all the vertices which have been visited before "vertex"
@@ -72,7 +72,7 @@ class SCC:
         visited_vertices.add(vertex)
 
         for adj_vertex in self._adjacent_vertices(vertex, reverse_edge=not is_first_pass_dfs):
-            self._dps(adj_vertex, visited_vertices, is_first_pass_dfs=is_first_pass_dfs)
+            self._dfs(adj_vertex, visited_vertices, is_first_pass_dfs=is_first_pass_dfs)
 
         if is_first_pass_dfs:
             self._push_to_stack(vertex)
