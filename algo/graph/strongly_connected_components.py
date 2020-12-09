@@ -1,7 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Dict, Hashable, List, Set
+from typing import Dict, Hashable, Iterable, List, Set
 
 
 @dataclass
@@ -38,7 +38,7 @@ class SCC:
         visited_before_current_vertex_dfs = set()
         output = []
 
-        for vertex in reversed(self._stack):
+        for vertex in self._stack_traversal:
             self._dps(vertex, visited_vertices, is_first_pass_dfs=False)
 
             new_visited_vertices = visited_vertices - visited_before_current_vertex_dfs
@@ -75,7 +75,7 @@ class SCC:
             self._dps(adj_vertex, visited_vertices, is_first_pass_dfs=is_first_pass_dfs)
 
         if is_first_pass_dfs:
-            self._stack.append(vertex)
+            self._push_to_stack(vertex)
 
     def _adjacent_vertices(self, vertex: Hashable, reverse_edge=False) -> List[Hashable]:
         """
@@ -89,14 +89,6 @@ class SCC:
         return edges.get(vertex) or []
 
     @cached_property
-    def _stack(self) -> List[Hashable]:
-        """
-        :return: a list which will be used to store the order in which
-                 vertices are visited in First DFS traversal
-        """
-        return []
-
-    @cached_property
     def _reversed_edges(self) -> Dict[Hashable, List[Hashable]]:
         """
         :return: reversing edges represented by "self.edges" and returning it
@@ -108,3 +100,28 @@ class SCC:
                 output[adj_vertex].append(vertex)
 
         return dict(output)
+
+    @cached_property
+    def _stack(self) -> List[Hashable]:
+        """
+        :return: a list which will be used to store the order in which
+                 vertices are visited in First DFS traversal
+        """
+        return []
+
+    @property
+    def _stack_traversal(self) -> Iterable[Hashable]:
+        """
+        since stack used in the impl is created from list, reversing the order of list
+        to equivalently traverse the stack
+        :return:
+        """
+        return reversed(self._stack)
+
+    def _push_to_stack(self, vertex: Hashable):
+        """
+        since stack is impl through a list, adding vertex to end of list and to find the
+        top element of stack, last element of stack can be checked
+        :param vertex:
+        """
+        self._stack.append(vertex)
