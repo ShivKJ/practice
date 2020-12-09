@@ -16,10 +16,10 @@ class SCC:
         """
         :return:
         """
-        self._first_pass()
-        return self._second_pass()
+        self._first_pass_dfs()
+        return self._second_pass_dfs()
 
-    def _second_pass(self) -> List[Set[Hashable]]:
+    def _second_pass_dfs(self) -> List[Set[Hashable]]:
         """
         :return:
         """
@@ -28,7 +28,7 @@ class SCC:
         output = []
 
         for vertex in reversed(self.stack):
-            self._dps(vertex, visited_vertices, is_first_pass=False)
+            self._dps(vertex, visited_vertices, is_first_pass_dfs=False)
 
             new_visited_vertices = visited_vertices - visited_before_current_vertex_dfs
 
@@ -38,7 +38,7 @@ class SCC:
 
         return output
 
-    def _first_pass(self):
+    def _first_pass_dfs(self):
         """
         :return:
         """
@@ -47,11 +47,11 @@ class SCC:
         for vertex_index in self.vertices:
             self._dps(vertex_index, visited_vertices)
 
-    def _dps(self, vertex: Hashable, visited_vertices: Set[Hashable], is_first_pass=True):
+    def _dps(self, vertex: Hashable, visited_vertices: Set[Hashable], is_first_pass_dfs=True):
         """
         :param vertex:
         :param visited_vertices:
-        :param is_first_pass:
+        :param is_first_pass_dfs:
         :return:
         """
         if vertex in visited_vertices:
@@ -59,15 +59,14 @@ class SCC:
 
         visited_vertices.add(vertex)
 
-        for adj_vertex in self.adjacent_vertices(vertex, reverse_edge=not is_first_pass):
-            self._dps(adj_vertex, visited_vertices, is_first_pass=is_first_pass)
+        for adj_vertex in self.adjacent_vertices(vertex, reverse_edge=not is_first_pass_dfs):
+            self._dps(adj_vertex, visited_vertices, is_first_pass_dfs=is_first_pass_dfs)
 
-        if is_first_pass:
+        if is_first_pass_dfs:
             self.stack.append(vertex)
 
     def adjacent_vertices(self, vertex: Hashable, reverse_edge=False) -> Set[Hashable]:
         """
-
         :param vertex:
         :param reverse_edge:
         :return:
