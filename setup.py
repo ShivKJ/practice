@@ -1,13 +1,13 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name='practice',
-    version='',
-    packages=['ds', 'algo', 'algo.dp', 'operationR', 'operationR.initialialSolution',
-              'numericalMethods'],
-    url='',
-    license='',
+    version='1.0',
+    packages=find_packages(),
+    url='https://github.com/ShivKJ/practice',
+    license='MIT License',
     author='Shiv',
+    python_requires='>=3.8',
     author_email='shivkj001@gmail.com',
-    description=''
+    description='algos impl in python'
 )
