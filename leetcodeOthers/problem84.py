@@ -10,26 +10,29 @@ def largest_area_rectangle(heights: List[int]) -> int:
     stack = deque()
     curr_index = 0
 
-    def width():
+    def prev_index():
         """
         :return: rectangle width
         """
         return stack[-1] + 1 if stack else 0
 
-    area = 0
-    bars = len(heights)
+    def get_area():
+        """
+        :return: if item from stack is popped then calculating area
+        """
+        return heights[stack.pop()] * (curr_index - prev_index())
 
-    while curr_index < bars:
+    area = 0
+    
+    while curr_index < len(heights):
         if not stack or heights[stack[-1]] <= heights[curr_index]:
             stack.append(curr_index)
             curr_index += 1
         else:
-            index = stack.pop()
-            area = max(area, heights[index] * (curr_index - width()))
+            area = max(area, get_area())
 
     while stack:
-        index = stack.pop()
-        area = max(area, heights[index] * (bars - width()))
+        area = max(area, get_area())
 
     return area
 
