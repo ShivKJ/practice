@@ -23,7 +23,7 @@ def largest_area_rectangle(heights: List[int]) -> int:
         return heights[stack.pop()] * (curr_index - prev_index())
 
     area = 0
-    
+
     while curr_index < len(heights):
         if not stack or heights[stack[-1]] <= heights[curr_index]:
             stack.append(curr_index)
