@@ -1,5 +1,11 @@
 class Solution:
     def maximalSquare(self, matrix) -> int:
+        """
+        please see https://www.youtube.com/watch?v=FO7VXDfS8Gk&ab_channel=IrfanBaqui
+        for better understanding
+        :param matrix:
+        :return:
+        """
         result = 0
 
         for i in range(len(matrix)):
