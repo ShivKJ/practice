@@ -20,22 +20,25 @@ def process_dict(y_to_val: dict):
 class Solution:
     def verticalTraversal(self, root: TreeNode) -> List[List[int]]:
         queue = deque()
-        queue.append(root)
-        output = defaultdict(lambda: defaultdict(list))
+        queue.append((root, 0, 0))
+        output = []
 
-        root.xy = 0, 0
         while queue:
-            e = queue.popleft()
-            x, y = e.xy
-
-            output[x][y].append(e.val)
+            e, x, y = queue.popleft()
+            output.append((x, y, root.val))
 
             if e.left is not None:
-                e.left.xy = x - 1, y - 1
-                queue.append(e.left)
+                e.left.xy = x - 1, y + 1
+                queue.append((e.left, x - 1, y + 1))
 
             if e.right is not None:
-                e.right.xy = x + 1, y - 1
-                queue.append(e.right)
+                queue.append((e.right, x + 1, y + 1))
 
-        return [process_dict(output[k]) for k in sorted(output.keys())]
+        output.sort()
+
+        tmp = defaultdict(list)
+
+        for x, y, val in output:
+            tmp[x].append(val)
+
+        return list(tmp.values())
