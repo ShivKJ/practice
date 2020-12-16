@@ -2,20 +2,25 @@ from typing import List
 
 
 def get_min(arr: List[int]) -> int:
+    """
+    :param arr: all elements in rotated sorted array are distinct
+    :return:
+    """
     left, right = 0, len(arr) - 1
 
-    while left < right:
+    while left <= right:
         mid = (left + right) // 2
 
         if arr[left] > arr[mid]:
+            # if element on left is more than mid element then min element
+            # is between left + 1 and mid
             left += 1
             right = mid
         elif arr[mid] > arr[right]:
+            # means min element is between mid + 1 and right
             left = mid + 1
         else:
-            return min(arr[left], arr[mid], arr[right])
-
-    return min(arr[left], arr[right])
+            return arr[left]  # 0 rotation between left and right indices
 
 
 if __name__ == '__main__':
