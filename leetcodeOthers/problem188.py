@@ -7,13 +7,13 @@ class Solution:
             # nothing to do
             return 0
 
-        n = len(prices)
-        A = [[0] * n for _ in range(max_transaction)]  # max_transaction X n
+        total_days = len(prices)
+        A = [[0] * total_days for _ in range(1 + max_transaction)]  # max_transaction X n
 
-        for k in range(max_transaction):
-            max_diff = -prices[0]
+        for transaction in range(1, max_transaction + 1):
+            max_diff = A[transaction - 1][0] - prices[0]
 
-            for i in range(n):
+            for day in range(1, total_days):
                 """
                 let A[k][i] = profit from max of k-transaction done up to i-th day
                 We can find recursive formula in the following way
@@ -21,17 +21,15 @@ class Solution:
                 2) we do sell on ith day
                 
                 A[k][i] = max(
-                                A[k][i-1] if i > 0 else 0,
-                                max(prices[i] - prices[m] + (A[k-1][m] if k > 0 else 0) for m in range(j))
+                                A[k][i-1],
+                                prices[i] + (max(A[k-1][m] - prices[m])  
+                                    for m in range(1, j)
                         )
                  
+                 (max(A[k-1][m] - prices[m]) = total cost incurred if a purchased is made on mth day
+                 prices[i] + (max(A[k-1][m] - prices[m]) = total profit if purchased on mth day and sold on ith day
                 """
-                A[k][i] = max(A[k][i - 1], max_diff + prices[i])
-                max_diff = max(max_diff, A[k - 1][i] - prices[i])
+                A[transaction][day] = max(A[transaction][day - 1], max_diff + prices[day])
+                max_diff = max(max_diff, A[transaction - 1][day] - prices[day])
 
         return A[-1][-1]
-
-
-if __name__ == '__main__':
-    arr = [2, 5, 7, 1, 4, 3, 1, 3]
-    print(Solution().maxProfit(3, arr))
