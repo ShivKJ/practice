@@ -20,7 +20,8 @@ def failure_function(pattern: str) -> List[int]:
             j += 1
             k += 1
         elif k > 0:
-            k = fail[k - 1]  # moving k to previous fail value
+            k = fail[k - 1]  # moving k to previous fail value and next
+            # time jth char will be compared with kth index
         else:
             j += 1
 
