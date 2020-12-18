@@ -39,5 +39,5 @@ def generate(string: str):
 
 
 if __name__ == '__main__':
-    for e in generate('ABC'):
-        print(e)
+    for i, e in enumerate(sorted(generate('12345')), start=1):
+        print(f'{i:3} {e}')
