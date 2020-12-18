@@ -15,8 +15,8 @@ def permutation(index: int, values: List[int]):
         6) [3, 2, 1]
     B) if values = [1], the output
         1) [1]
-    number of elements in output = n!
-                                 = n * (n-1)! where 0! = 1
+    number of elements in output = n! where 0! = 1
+                                 = n * (n-1)!
     :param index:
     :param values:
     """
