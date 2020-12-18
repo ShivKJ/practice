@@ -1,18 +1,43 @@
-def fun(prefix: str, s: str, container: list):
-    if not s:
-        container.append(prefix)
+def permutation(index: int, string: str):
+    """
+    creating recursive function to get all the permutation
+    of elements from "string"
 
-    for i, e in enumerate(s):
-        fun(prefix + e, s[:i] + s[i + 1:], container)
+    Example:
+    A) if string = ABC then output
+        1) ABC
+        2) ACB
+        3) BAC
+        4) CAB
+        5) BCA
+        6) CBA
+    B) if string = A, the output
+        1) A
+    number of elements in output = n! where 0! = 1
+                                 = n * (n-1)!
+    :param index:
+    :param string:
+    :return generator of permutation of string
+    """
+    n = len(string)
+    v = string[index]
+
+    if index == n - 1:
+        yield from v  # only on element in output
+    else:
+        for j in range(index, n):
+            for e in permutation(index + 1, string):
+                yield e[:j - index] + v + e[j - index:]
 
 
-def generate(s) -> list:
-    container = []
-
-    fun('', s, container)
-
-    return container
+def generate(string: str):
+    """
+    :param string:
+    :return: generator for permutation of given string
+    """
+    return permutation(0, string)
 
 
 if __name__ == '__main__':
-    print(generate('ABC'))
+    for e in generate('ABC'):
+        print(e)
