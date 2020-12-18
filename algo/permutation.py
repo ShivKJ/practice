@@ -23,7 +23,7 @@ def permutation(index: int, string: str):
     v = string[index]
 
     if index == n - 1:
-        yield from v  # only on element in output
+        yield from [v]  # only on element in output
     else:
         for j in range(index, n):
             for e in permutation(index + 1, string):
