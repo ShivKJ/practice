@@ -16,6 +16,7 @@
 *.tar
 *.jpeg
 *.jpg
+*.ipynb
 MANIFEST
 
 *.pyc
