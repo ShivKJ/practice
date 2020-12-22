@@ -8,13 +8,13 @@ class Solution:
 
         output = []
 
-        for curr_index, e in enumerate(nums):
+        for i, e in enumerate(nums):
             while queue:
-                largest_element_index = queue[0]
+                largest_element_index = queue[0]  # loop invariant
 
                 if nums[largest_element_index] <= e:
                     queue.clear()  # removing all the elements from queue
-                elif largest_element_index + (k - 1) < curr_index:
+                elif largest_element_index + (k - 1) < i:
                     # sliding makes largest element move out of the window
                     queue.popleft()
                 elif nums[queue[-1]] <= e:
@@ -23,9 +23,9 @@ class Solution:
                 else:
                     break
 
-            queue.append(curr_index)
+            queue.append(i)
 
-            if curr_index >= k - 1:
+            if i >= k - 1:
                 output.append(nums[queue[0]])
 
         return output
