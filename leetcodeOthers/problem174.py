@@ -40,13 +40,9 @@ class Solution:
 
         cache[m - 1][n - 1] = max(1 - dungeon[m - 1][n - 1], 1)
 
-        for i in reversed(range(m)):
-            for j in reversed(range(n)):
-                health_to_reach_final_location(i, j)
-
-        return cache[0][0]  # equivalently health_to_reach_final_location(0, 0)
+        return health_to_reach_final_location(0, 0)
 
 
 if __name__ == '__main__':
     print(Solution().calculateMinimumHP([[-2, -3, 3], [-5, -10, 1], [10, 30, -5]]))
-    # print(Solution().calculateMinimumHP([[1]]))
+    print(Solution().calculateMinimumHP([[100]]))
