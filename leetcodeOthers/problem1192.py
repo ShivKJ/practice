@@ -30,13 +30,11 @@ def get_cc(n, edges: Dict[int, Set[int]]) -> List[List[int]]:
             if v != parent:
                 if visit_time[v] is None:
                     t = dfs(v, parent=u)
-                else:
-                    t = visit_time[v]
 
-                if visited_time_of_u < t:  # no loop found
-                    output.append([u, v])
-                else:
-                    visit_time[u] = min(visit_time[u], t)
+                    if visited_time_of_u < t:  # no loop possible
+                        output.append([u, v])
+
+                visit_time[u] = min(visit_time[u], visit_time[v])
 
         return visit_time[u]
 
