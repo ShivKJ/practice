@@ -1,3 +1,4 @@
+cached-property
 dask
 isort
 matplotlib
